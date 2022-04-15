@@ -10,7 +10,7 @@ on:
       - 'android/**'
       - 'android-ytdl/**'
   pull_request:      
-  paths:
+    paths:
       - '.github/workflows/mpvbuild.yml'
       - 'ios/**'
       - 'android/**'
