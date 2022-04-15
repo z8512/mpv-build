@@ -196,3 +196,58 @@ jobs:
           curl -X POST -H "Content-Type: multipart/form-data" -F "originalFile=@mpv-android-${{ matrix.target }}.7z" ${{ secrets.FILE_SERVER }}
           sudo sysctl -w net.core.rmem_max=2500000
           $GOPATH/bin/transfer -m upload -c ${{ secrets.FILE_SERVER3 }} -p quic mpv-android-${{ matrix.target }}.7z
+
+
+  AndroidYtdl:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        target: [armv7l, arm64, x86, x86_64]
+    steps:          
+      - name: prepare toolchain
+        run: |
+          sudo apt-get update -qq;
+          sudo apt-get install -qq nasm p7zip-full;
+      - name: Check out code 
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: build mpv
+        run: |
+          pwd
+          ls -l
+          cd android-ytdl
+          ./download.sh 
+          ./buildall.sh --arch ${{ matrix.target }} mpv
+          cd ..
+
+      - name: upload artifact
+        uses: actions/upload-artifact@v1
+        with:
+          path: android/prefix/${{ matrix.target }}/lib/
+          name: mpv-android-${{ matrix.target }}
+
+      - name: Set up Go 1.17
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.17
+        id: go
+
+      - name: Build transfer command
+        run: |
+          git clone --depth=1 https://github.com/missdeer/transfer.git gopath
+          cd gopath
+          go get
+          go build -ldflags="-s -w" -o bin/transfer
+          cd ..
+
+      - name: upload to own file server
+        run: |
+          export GOPATH=$PWD/gopath
+          cd android/prefix/${{ matrix.target }}
+          7z a mpv-android-${{ matrix.target }}.7z lib
+          ls -l
+          curl -X POST -H "Content-Type: multipart/form-data" -F "originalFile=@mpv-android-${{ matrix.target }}.7z" ${{ secrets.FILE_SERVER }}
+          sudo sysctl -w net.core.rmem_max=2500000
+          $GOPATH/bin/transfer -m upload -c ${{ secrets.FILE_SERVER3 }} -p quic mpv-android-${{ matrix.target }}.7z
