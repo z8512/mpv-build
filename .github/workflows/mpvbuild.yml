@@ -153,5 +153,5 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           path: android/prefix/${{ matrix.target }}/lib/
-          name: mpv-android-${{ matrix.target }}
+          name: mpv-android-ytdl-${{ matrix.target }}
 
