@@ -1,7 +1,6 @@
 name: mpv-build
 
 on: 
-  workflow_dispatch:
   schedule:
     - cron:  '0 17 * * *'
   push:
