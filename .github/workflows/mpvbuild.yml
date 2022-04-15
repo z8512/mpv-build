@@ -1,11 +1,6 @@
 name: mpv-build
+
 on: 
-  workflow_dispatch:
-  paths:
-      - '.github/workflows/mpvbuild.yml'
-      - 'ios/**'
-      - 'android/**'
-      - 'android-ytdl/**'
   schedule:
     - cron:  '0 17 * * *'
   push:
@@ -15,7 +10,7 @@ on:
       - 'android/**'
       - 'android-ytdl/**'
   pull_request:      
-  paths:
+    paths:
       - '.github/workflows/mpvbuild.yml'
       - 'ios/**'
       - 'android/**'
